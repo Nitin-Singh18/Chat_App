@@ -14,6 +14,7 @@ Future<User?> createAccount(String name, String email, String password) async {
         .user;
     if (user != null) {
       print("Account Successfully Created");
+      await user.updateDisplayName(name);
       await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
         "name": name,
         "email": email,
@@ -34,12 +35,18 @@ Future<User?> createAccount(String name, String email, String password) async {
 
 Future<User?> logIn(String email, String password) async {
   FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   try {
     User? user = (await _auth.signInWithEmailAndPassword(
             email: email, password: password))
         .user;
     if (user != null) {
+      final snapshot = await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .get();
+      await user.updateDisplayName(snapshot.data()!['name']);
       print("Login Successful");
       return user;
     } else {
