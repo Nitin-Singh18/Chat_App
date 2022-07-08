@@ -33,7 +33,23 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(title: Text(userMap['name'])),
+      appBar: AppBar(
+        title: StreamBuilder<DocumentSnapshot>(
+            stream:
+                _firestore.collection('users').doc(userMap['uid']).snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.data != null) {
+                return Container(
+                  child: Column(children: [
+                    Text(userMap['name']),
+                    Text(snapshot.data!['status']),
+                  ]),
+                );
+              } else {
+                return Container();
+              }
+            }),
+      ),
       body: SingleChildScrollView(
         child: Column(children: [
           Container(
