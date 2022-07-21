@@ -94,6 +94,7 @@ class ChatScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 9, 66, 110),
         title: StreamBuilder<DocumentSnapshot>(
             stream:
                 _firestore.collection('users').doc(userMap['uid']).snapshots(),
