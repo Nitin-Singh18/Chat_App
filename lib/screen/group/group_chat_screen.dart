@@ -29,7 +29,7 @@ class _GroupChatState extends State<GroupChat> {
   }
 
   void getAvailableGroups() async {
-    String uid = Uuid().v1();
+    String uid = _auth.currentUser!.uid;
 
     await _firestore
         .collection('users')
@@ -62,7 +62,9 @@ class _GroupChatState extends State<GroupChat> {
                 return ListTile(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => GroupChatRoom()));
+                        builder: (context) => GroupChatRoom(
+                              groupChatId: groupList[index]['id'],
+                            )));
                   },
                   leading: Icon(Icons.group),
                   title: Text(groupList[index]['name']),
