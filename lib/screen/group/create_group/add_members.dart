@@ -17,7 +17,7 @@ class _AddMemberState extends State<AddMember> {
 
   TextEditingController _search = TextEditingController();
 
-  List<Map<String, dynamic>> memberList = [];
+  List<Map<String, dynamic>> membersList = [];
 
   bool isLoading = false;
 
@@ -36,7 +36,7 @@ class _AddMemberState extends State<AddMember> {
         .get()
         .then((map) {
       setState(() {
-        memberList.add({
+        membersList.add({
           "name": map['name'],
           "email": map['email'],
           "uid": map['uid'],
@@ -66,15 +66,15 @@ class _AddMemberState extends State<AddMember> {
 
   void onResultTap() {
     bool isAlreadyExist = false;
-    for (int i = 0; i < memberList.length; i++) {
-      if (memberList[i]['uid'] == userMap!['uid']) {
+    for (int i = 0; i < membersList.length; i++) {
+      if (membersList[i]['uid'] == userMap!['uid']) {
         isAlreadyExist = true;
       }
     }
 
     if (!isAlreadyExist) {
       setState(() {
-        memberList.add({
+        membersList.add({
           "name": userMap!['name'],
           "email": userMap!['email'],
           "uid": userMap!['uid'],
@@ -86,9 +86,9 @@ class _AddMemberState extends State<AddMember> {
   }
 
   void onRemoveMembers(index) {
-    if (memberList[index]['uid'] != _auth.currentUser!.uid) {
+    if (membersList[index]['uid'] != _auth.currentUser!.uid) {
       setState(() {
-        memberList.removeAt(index);
+        membersList.removeAt(index);
       });
     }
   }
@@ -107,14 +107,14 @@ class _AddMemberState extends State<AddMember> {
         children: [
           Flexible(
               child: ListView.builder(
-                  itemCount: memberList.length,
+                  itemCount: membersList.length,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return ListTile(
                       leading: Icon(Icons.account_circle),
-                      title: Text(memberList[index]['name']),
-                      subtitle: Text(memberList[index]['email']),
+                      title: Text(membersList[index]['name']),
+                      subtitle: Text(membersList[index]['email']),
                       trailing: IconButton(
                         icon: Icon(Icons.close),
                         onPressed: () => onRemoveMembers(index),
@@ -148,7 +148,7 @@ class _AddMemberState extends State<AddMember> {
             height: size.height / 50,
           ),
           isLoading
-              ? CircularProgressIndicator()
+              ? Center(child: CircularProgressIndicator())
               : ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateColor.resolveWith(
@@ -170,11 +170,13 @@ class _AddMemberState extends State<AddMember> {
               : Container(),
         ],
       )),
-      floatingActionButton: memberList.length >= 2
+      floatingActionButton: membersList.length >= 2
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CreateGroup()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CreateGroup(
+                          membersList: membersList,
+                        )));
               },
               child: Icon(Icons.forward),
             )

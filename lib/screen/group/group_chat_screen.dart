@@ -1,9 +1,10 @@
 import 'package:chat_app/screen/group/create_group/add_members.dart';
 import 'package:chat_app/screen/group/group_chat_room.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:uuid/uuid.dart';
 
 class GroupChat extends StatefulWidget {
   const GroupChat({Key? key}) : super(key: key);
@@ -13,6 +14,36 @@ class GroupChat extends StatefulWidget {
 }
 
 class _GroupChatState extends State<GroupChat> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool isLoading = true;
+
+  List groupList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAvailableGroups();
+  }
+
+  void getAvailableGroups() async {
+    String uid = Uuid().v1();
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('groups')
+        .get()
+        .then((value) {
+      setState(() {
+        groupList = value.docs;
+        isLoading = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -21,19 +52,23 @@ class _GroupChatState extends State<GroupChat> {
         title: Text("Group"),
         backgroundColor: Color.fromARGB(255, 9, 66, 110),
       ),
-      body: ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return ListTile(
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => GroupChatRoom()));
-            },
-            leading: Icon(Icons.group),
-            title: Text("Group $index"),
-          );
-        },
-      ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              itemCount: groupList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => GroupChatRoom()));
+                  },
+                  leading: Icon(Icons.group),
+                  title: Text(groupList[index]['name']),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
