@@ -64,6 +64,7 @@ class _GroupChatState extends State<GroupChat> {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => GroupChatRoom(
                               groupChatId: groupList[index]['id'],
+                              groupName: groupList[index]['name'],
                             )));
                   },
                   leading: Icon(Icons.group),

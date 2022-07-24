@@ -4,8 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class GroupChatRoom extends StatelessWidget {
-  final String groupChatId;
-  GroupChatRoom({Key? key, required this.groupChatId}) : super(key: key);
+  final String groupChatId, groupName;
+  GroupChatRoom({Key? key, required this.groupChatId, required this.groupName})
+      : super(key: key);
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _message = TextEditingController();
@@ -37,8 +38,11 @@ class GroupChatRoom extends StatelessWidget {
         backgroundColor: Color.fromARGB(255, 9, 66, 110),
         actions: [
           IconButton(
-              onPressed: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => GroupInfo())),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => GroupInfo(
+                        groupId: groupChatId,
+                        groupName: groupName,
+                      ))),
               icon: Icon(Icons.more_vert))
         ],
       ),
